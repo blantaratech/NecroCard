@@ -1,0 +1,9 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "safe-card-runtime",
+  "version": "0.1.0",
+  "description": "Design and verify a bounded card interpreter with safe tool effects.",
+  "author": { "name": "NecroCard Team" },
+  "keywords": ["necrocard", "card runtime", "interpreter", "property tests"],
+  "license": "MIT"
+}

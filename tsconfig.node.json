@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023", "DOM"],
+    "types": ["node"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "allowJs": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "noEmit": true
+  },
+  "include": [
+    "vite.config.ts",
+    "playwright.config.ts",
+    "tests/**/*.ts",
+    "scripts/**/*.mjs"
+  ],
+  "exclude": ["supabase/functions", "node_modules", "dist"]
+}

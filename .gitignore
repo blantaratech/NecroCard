@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+supabase/functions/.env
+supabase/functions/.env.*
+!supabase/functions/.env.example
+supabase/.temp/
+supabase/.branches/
+.local-test/
+playwright-report/
+test-results/
+coverage/
+*.log
+.my_env
+/memory/

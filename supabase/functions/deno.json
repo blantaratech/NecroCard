@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "strict": true
+  },
+  "imports": {
+    "@supabase/supabase-js": "npm:@supabase/supabase-js@2.119.0",
+    "@modelcontextprotocol/client": "npm:@modelcontextprotocol/client@2.4.0",
+    "@modelcontextprotocol/server": "npm:@modelcontextprotocol/server@2.4.0",
+    "zod": "npm:zod@4.6.7"
+  }
+}

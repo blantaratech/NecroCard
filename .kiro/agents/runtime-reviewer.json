@@ -1,0 +1,9 @@
+{
+  "name": "runtime-reviewer",
+  "description": "Read-only review of safety, persistence and requirement coverage.",
+  "tools": ["read"],
+  "includeMcpJson": false,
+  "includePowers": false,
+  "resources": ["file://./.kiro/steering/runtime-safety.md"],
+  "prompt": "Review the supplied diff and relevant tests. Do not edit files or execute commands. Prioritize lost acknowledged edits, duplicate operations, unbounded execution, permission bypass and unsupported claims. Return severity, file/line, concrete triggering input and recommended correction. State what cannot be verified from the supplied evidence."
+}

@@ -1,0 +1,46 @@
+{
+  "name": "necrocard",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": "24.22.2" },
+  "packageManager": "npm@12.2.2",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.domain.json --noEmit && tsc -p tsconfig.node.json --noEmit && node scripts/check-domain-imports.mjs && npm run check:edge",
+    "check:edge": "node scripts/check-edge.mjs",
+    "test:unit": "vitest run tests/unit",
+    "test:pbt": "vitest run tests/properties",
+    "check:core": "npm run typecheck && npm run test:unit && npm run test:pbt",
+    "check:bundle": "node scripts/check-bundle-secrets.mjs",
+    "check:tracked": "node scripts/check-tracked-secrets.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:local": "playwright test --project=phone-320 --project=phone-chromium --project=tablet-chromium --project=desktop-chromium",
+    "deploy:frontend": "netlify deploy --prod --dir=dist --no-build"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.119.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.4.0",
+    "@modelcontextprotocol/server": "2.4.0",
+    "@playwright/test": "1.65.0",
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.2.1",
+    "deno": "2.9.6",
+    "fast-check": "4.10.2",
+    "netlify-cli": "27.16.2",
+    "supabase": "3.0.0",
+    "typescript": "7.0.2",
+    "vite": "8.3.6",
+    "vitest": "5.1.0"
+  }
+}

@@ -95,7 +95,7 @@ Local constraints that apply to every task:
     - Append one entry per check to `docs/decisions.md`: command, Node/npm (and Deno) versions, date, result pass/fail/not run with reason
     - _Requirements: 1.4, 1.6, 2.1, 2.4, 2.5, 2.6, 3.4, 3.5, 3.8, 3.9, 3.12, 4.5, 4.9, 4.10_
 
-- [ ] 2. Git setup and first push (Owner B)
+- [x] 2. Git setup and first push (Owner B)
   - [x] 2.1 Initialise the repository and remote
     - In `NC_Codebase/`: `git init`, `git switch -c main` (or `git branch -M main`), `git remote add origin https://github.com/blantaratech/NecroCard.git`
     - Do not change Git config. If `user.name` or `user.email` is not set, stop and ask the user
@@ -108,20 +108,20 @@ Local constraints that apply to every task:
     - Append the `check:tracked` result to `docs/decisions.md` and stage it
     - _Requirements: 4.17, 2.4_
 
-  - [-] 2.3 Make the initial commit and push
+  - [x] 2.3 Make the initial commit and push
     - Create one clean initial commit of the scaffold
     - Run `git ls-remote origin`. If the remote has commits, run `git pull --rebase origin main` first and resolve conflicts without discarding scaffold files (the remote was empty when checked on 2026-11-09)
     - Run `git push -u origin main`. Never force push. If authentication fails, stop and ask the user
     - Note the commit hash and push result for 3.1
     - _Requirements: 1.4, 4.17_
 
-- [ ] 3. Checkpoint - Record the Resume note and push
-  - [ ] 3.1 Add the initial Resume note
+- [x] 3. Checkpoint - Record the Resume note and push
+  - [x] 3.1 Add the initial Resume note
     - Append a `## Resume` section at the end of this `tasks.md` with five bullets per `NECROCARD_KIRO_MEMORY_GUIDE.md` §3: task and owner (task 3, Owner B, date MYT); working state (branch `main`, commit hash from 2.3, local changes); last verified check (command and result); blocker (or none); next action (task 4.1, `src/domain/limits.ts`)
     - Append the push result to `docs/decisions.md`
     - _Requirements: 2.4, 2.6_
 
-  - [ ] 3.2 Commit and push the checkpoint
+  - [x] 3.2 Commit and push the checkpoint
     - Commit `tasks.md` and `docs/decisions.md`, then `git push` (no force)
     - Ensure all checks recorded so far are listed with one current result; ask the user if questions arise
     - _Requirements: 2.6_
@@ -563,3 +563,11 @@ Local constraints that apply to every task:
   ]
 }
 ```
+
+## Resume
+
+- Task and owner — task 3 (checkpoint after scaffold and first push) · Owner B · 2026-11-10 MYT
+- Working state — branch `main` · commit `efd10f4` (initial scaffold, pushed to origin/main) · local changes: this Resume note, tasks.md checkbox states, the `docs/decisions.md` push entry and the `docs/kiro-evidence.md` row, committed in 3.2
+- Last verified — `npm run typecheck`, `npm run build`, `npm run check:bundle`, `npm run check:edge` and `npm run check:tracked` all exit 0 on Node 24.19.0 / npm 11.17.0; `git push -u origin main` succeeded · see the Verification log in `docs/decisions.md`
+- Blocker — none for spec 01. Known constraints: no Docker (organisation policy), pinned Node 24.22.2 / npm 12.2.2 not installed locally, 18 moderate/low npm audit findings not yet triaged
+- Next action — task 4.1, implement `src/domain/limits.ts` (`LIMITS`, `utf8ByteLength`, `codePointLength`, name rule) per `design.md`

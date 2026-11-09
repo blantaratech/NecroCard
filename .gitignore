@@ -1,20 +1,31 @@
+# Dependencies
 node_modules/
+
+# Build output
 dist/
+
+# Environment & secrets
 .env
 .env.*
 !.env.example
+.my_env
 supabase/functions/.env
 supabase/functions/.env.*
 !supabase/functions/.env.example
+
+# Supabase local state
 supabase/.temp/
 supabase/.branches/
+
+# Test artifacts
 .local-test/
 playwright-report/
 test-results/
 coverage/
-*.log
-.my_env
-/memory/
 
-# Local planning docs
+# Logs
+*.log
+
+# Local-only files
+/memory/
 NECROCARD_BLUEPRINT_v2.md

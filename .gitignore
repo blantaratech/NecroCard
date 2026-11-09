@@ -15,3 +15,6 @@ coverage/
 *.log
 .my_env
 /memory/
+
+# Local planning docs
+NECROCARD_BLUEPRINT_v2.md

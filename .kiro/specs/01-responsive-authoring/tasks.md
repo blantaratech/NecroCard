@@ -149,20 +149,20 @@ Local constraints that apply to every task:
     - **Validates: Requirements 8.5, 8.6, 8.7**
     - File: `tests/properties/raster.property.test.ts`
 
-- [ ] 5. Canonical form and schema validator (Owner B)
-  - [ ] 5.1 Define the zod schemas and document types in `src/domain/schema.ts`
+- [x] 5. Canonical form and schema validator (Owner B)
+  - [x] 5.1 Define the zod schemas and document types in `src/domain/schema.ts`
     - `z.strictObject` for every object, literals for `format` and `schemaVersion`, integer geometry, `discriminatedUnion("kind")` for widgets, `UUID_TEXT` IDs, `z.record` for `cards`; export `StackDocument`, `Card`, `Widget`, `Diagnostic`, `DiagnosticCode`, `Path`, `Validation`
     - _Requirements: 6.1, 6.2, 6.3, 6.5, 6.10_
 
-  - [ ] 5.2 Implement `canonicalize` in `src/domain/canonical.ts`
+  - [x] 5.2 Implement `canonicalize` in `src/domain/canonical.ts`
     - Schema key order, `cards` keys sorted by UTF-16 code units, widget arrays in order, 2-space indent, LF, one trailing newline, no BOM
     - _Requirements: 20.1, 20.7_
 
-  - [ ] 5.3 Implement `validateStack` in `src/domain/schema.ts`
+  - [x] 5.3 Implement `validateStack` in `src/domain/schema.ts`
     - Structural pre-pass (iterative; non-finite numbers, `__proto__`/`constructor`/`prototype` keys, depth over 8), zod parse mapped to diagnostics, semantic checks (cardOrder permutation, id equals key, card and widget counts, geometry bounds, bitmap decode, names and title, unique names, unique lowercased IDs, source bytes, canonical size); limit diagnostics carry `measured` and `max`; deterministic diagnostic order; never mutates the candidate
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.10, 6.11_
 
-  - [ ] 5.4 Create shared test generators in `tests/properties/arbitraries.ts`
+  - [x] 5.4 Create shared test generators in `tests/properties/arbitraries.ts`
     - Valid-document generator (1–20 cards, 0–40 widgets, names of 1–64 code points including astral and combining characters, in-card geometry, random and boundary bitmaps, biased toward small sizes), a deterministic `IdSource` counter, and a fault injector that records the injected path
     - _Requirements: 6.1, 6.2, 6.3_
 
@@ -185,8 +185,8 @@ Local constraints that apply to every task:
     - `tests/unit/schema.test.ts`: 20 cards, 40 widgets, an 8,192-byte source and a document whose Canonical_Form is exactly 1,048,576 bytes are accepted; one more is rejected with `measured` and `max`
     - _Requirements: 6.4_
 
-- [ ] 6. Raster and dither (Owner B)
-  - [ ] 6.1 Implement `linePixels` and `applyPolyline` in `src/domain/raster.ts`
+- [x] 6. Raster and dither (Owner B)
+  - [x] 6.1 Implement `linePixels` and `applyPolyline` in `src/domain/raster.ts`
     - Integer Bresenham with the design's tie rule; polyline applies the first sample, then each segment in arrival order; out-of-range pixels skipped, in-range pixels of the same segment written
     - _Requirements: 9.1, 9.2, 9.4_
 
@@ -195,7 +195,7 @@ Local constraints that apply to every task:
     - **Validates: Requirements 9.1, 9.2**
     - File: `tests/properties/line.property.test.ts`
 
-  - [ ] 6.3 Implement `fillRegion` and `src/domain/dither.ts`
+  - [x] 6.3 Implement `fillRegion` and `src/domain/dither.ts`
     - Iterative 4-connected fill with `visited` marked at push time (stack bounded at 40,960); `BAYER4`, `DITHER_LEVEL = 6`, `ditherPattern(x, y)`
     - _Requirements: 10.1, 10.4_
 
@@ -291,7 +291,7 @@ Local constraints that apply to every task:
     - _Requirements: 2.3, 2.4, 2.6, 4.17, 24.8, 24.13_
 
 - [ ] 10. Input state machines (Owner A)
-  - [ ] 10.1 Implement `src/input/pointerMapper.ts`
+  - [x] 10.1 Implement `src/input/pointerMapper.ts`
     - `logicalPoint` with the blueprint §2.7 formula, clamping, and an invalid-geometry error for non-finite inputs or non-positive size
     - _Requirements: 14.1, 14.2, 14.4_
 
@@ -559,34 +559,37 @@ Local constraints that apply to every task:
     { "id": 10, "tasks": ["4.2", "4.3"] },
     { "id": 11, "tasks": ["4.4", "5.1", "6.1"] },
     { "id": 12, "tasks": ["4.5", "5.2", "6.2", "6.3", "10.1"] },
-    { "id": 13, "tasks": ["5.3", "10.2", "10.3", "11.4"] },
-    { "id": 14, "tasks": ["5.4", "10.4", "10.5", "11.5", "12.1"] },
-    { "id": 15, "tasks": ["5.5", "5.6", "5.8", "7.1", "10.8", "12.2", "12.4"] },
+    { "id": 13, "tasks": ["5.3"] },
+    { "id": 14, "tasks": ["5.4"] },
+    { "id": 15, "tasks": ["5.5", "5.6", "5.8", "7.1"] },
     { "id": 16, "tasks": ["5.7", "7.2", "7.3"] },
     { "id": 17, "tasks": ["7.4", "7.5", "7.6"] },
     { "id": 18, "tasks": ["7.7", "7.8", "7.10", "8.1"] },
-    { "id": 19, "tasks": ["7.9", "8.2", "8.3", "11.1"] },
+    { "id": 19, "tasks": ["7.9", "8.2", "8.3"] },
     { "id": 20, "tasks": ["9.1"] },
     { "id": 21, "tasks": ["9.2"] },
     { "id": 22, "tasks": ["9.3"] },
     { "id": 23, "tasks": ["9.4"] },
-    { "id": 24, "tasks": ["10.6", "11.2", "11.3", "12.3", "13.1", "17.1", "18.1"] },
-    { "id": 25, "tasks": ["10.7", "13.2", "14.1", "17.2", "17.3", "18.2"] },
-    { "id": 26, "tasks": ["13.3"] },
-    { "id": 27, "tasks": ["13.4"] },
-    { "id": 28, "tasks": ["15.1"] },
-    { "id": 29, "tasks": ["15.2"] },
-    { "id": 30, "tasks": ["17.4"] },
-    { "id": 31, "tasks": ["17.5", "18.3"] },
-    { "id": 32, "tasks": ["18.4", "19.1"] },
-    { "id": 33, "tasks": ["19.2", "19.3", "21.1"] },
-    { "id": 34, "tasks": ["21.2", "21.3", "21.4", "21.5", "21.6", "21.7"] },
-    { "id": 35, "tasks": ["21.8"] },
-    { "id": 36, "tasks": ["22.1"] },
-    { "id": 37, "tasks": ["22.2"] },
-    { "id": 38, "tasks": ["22.3"] },
-    { "id": 39, "tasks": ["23.1"] },
-    { "id": 40, "tasks": ["23.2"] }
+    { "id": 24, "tasks": ["17.1", "18.1"] },
+    { "id": 25, "tasks": ["17.2", "17.3", "18.2"] },
+    { "id": 26, "tasks": ["10.2", "10.3", "11.1", "11.4", "12.1", "12.4"] },
+    { "id": 27, "tasks": ["10.4", "10.5", "11.2", "11.3", "11.5", "12.2", "12.3", "13.1"] },
+    { "id": 28, "tasks": ["10.6", "10.7", "10.8", "13.2", "14.1"] },
+    { "id": 29, "tasks": ["13.3"] },
+    { "id": 30, "tasks": ["13.4"] },
+    { "id": 31, "tasks": ["15.1"] },
+    { "id": 32, "tasks": ["15.2"] },
+    { "id": 33, "tasks": ["17.4"] },
+    { "id": 34, "tasks": ["17.5", "18.3"] },
+    { "id": 35, "tasks": ["18.4", "19.1"] },
+    { "id": 36, "tasks": ["19.2", "19.3", "21.1"] },
+    { "id": 37, "tasks": ["21.2", "21.3", "21.4", "21.5", "21.6", "21.7"] },
+    { "id": 38, "tasks": ["21.8"] },
+    { "id": 39, "tasks": ["22.1"] },
+    { "id": 40, "tasks": ["22.2"] },
+    { "id": 41, "tasks": ["22.3"] },
+    { "id": 42, "tasks": ["23.1"] },
+    { "id": 43, "tasks": ["23.2"] }
   ]
 }
 ```

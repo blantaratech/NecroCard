@@ -180,6 +180,7 @@ export type Path = readonly (string | number)[];
 export interface Diagnostic {
   code: DiagnosticCode; path: Path; message: string;
   measured?: number; max?: number; otherPath?: Path;
+  references?: readonly { cardId: Id; widgetId: Id }[];  // only for code "referenced"; non-empty, Reference_Index order
 }
 export type Validation<T> = { ok: true; value: T } | { ok: false; diagnostics: Diagnostic[] };
 export function validateStack(candidate: unknown): Validation<StackDocument>;
@@ -225,6 +226,8 @@ export function commit(h: EditHistory, e: HistoryEntry): EditHistory;
 export function undo(h: EditHistory): { history: EditHistory; doc: StackDocument } | null;
 export function redo(h: EditHistory): { history: EditHistory; doc: StackDocument } | null;
 ```
+
+`Diagnostic.references` (decision D-C, accepted by the user 2026-11-10) carries the references of a `referenced` diagnostic as data. It is present only when `code === "referenced"`, and then it is non-empty and in Reference_Index order. One rejection is one diagnostic (Req 7.6). It holds Stable_IDs, not names; the UI (task 15.1) resolves the current Card and Widget names when it renders the message. Rationale: names can change while IDs cannot, and structured extension fields are preferred over packing data into the message text ([RFC 9457 §3.2](https://www.rfc-editor.org/rfc/rfc9457.html)). `src/domain/schema.ts` does not have this field yet; task 5.3 or 7.1 adds it.
 
 `Result<T>` is `{ ok: true; value: T } | { ok: false; error: string }`. Domain functions never throw for invalid input; they return errors. They may throw only on programmer error (an assertion that a type already guarantees).
 
@@ -470,6 +473,15 @@ This equals the closed form `minorOffset(t) = floor((2·t·m + n) / (2·n))`:
 - **Tie rule:** when `t·m/n` is exactly k + ½, the minor coordinate rounds up, which means toward the end point. Lines are therefore direction-dependent on tie pixels. Samples are always applied in arrival order, so pointer and keyboard strokes with the same sequence produce the same pixels.
 
 `applyPolyline(bitmap, samples, v)` sets the first sample, then each consecutive segment. Pixels outside 0–255 × 0–159 are skipped (clipped) while in-range pixels of the same segment are still written (Req 9.4). Mapper-clamped samples never leave the bitmap, but the reducer still handles any integer within ±4,096.
+
+**In-place writes (decision D-A, accepted by the user 2026-11-10).** `applyPolyline(b, samples, v)` changes `b` in place and returns it. This is a deliberate exception to copy-on-write. Callers must pass a bitmap they own and that nothing else references:
+
+- `stroke/commit` (task 7.6) passes the fresh array returned by `decodeBitmap`, so no extra copy is needed.
+- The CanvasView pointer preview (task 13.2) keeps one working bitmap in a `useRef`. Each pointer sample draws only the newest segment (previous sample → new sample) into it, and `putImageData` runs at most once per animation frame. On discard, the working bitmap is restored from the document.
+- Drawing the segments one by one produces the same pixels as drawing the whole polyline at once, because segments are applied in arrival order. Property 20 therefore stays valid.
+- A bitmap that belongs to the document, to the Edit_History or to another Card is never passed.
+- Rationale: React allows mutating a value the caller just created ("local mutation", [Updating Objects in State](https://react.dev/learn/updating-objects-in-state)).
+- Proposed, not adopted: reading `PointerEvent.getCoalescedEvents()`, with a feature check, for smoother fast strokes ([MDN](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/getCoalescedEvents)). It needs separate user approval before it is added to task 13.2.
 
 ### Dither_Fill (`raster.ts`, `dither.ts`)
 
@@ -951,6 +963,17 @@ Domain functions return results; only the app layer turns them into messages. No
 | Check scripts | exit codes | 0 pass; 1 findings or failures; 2 missing `dist/`; messages never include secret values |
 
 Unexpected exceptions in React render are caught by one top-level error boundary that keeps the current document in memory, offers Export, and shows a reload hint. It does not hide errors from the console in development.
+
+Error policy for the pure domain and input code (decision D-B, accepted by the user 2026-11-10):
+
+- Expected failures return `Result` or `Validation` diagnostics. Examples: invalid documents and files, pointer geometry (`logicalPoint`), bitmap text and editor rejections.
+- Contract violations that only a bug can cause throw `RangeError`. Examples: non-integer coordinates reaching `linePixels`, `applyPolyline`, `fillRegion` or `ditherPattern`, and a wrong-size bitmap passed to `encodeBitmap` or `fillRegion`.
+- The policy relies on four conditions:
+  1. `logicalPoint` only produces integers.
+  2. `stroke/commit` (task 7.6) rejects non-integer samples and samples with |v| > 4,096 before any raster call.
+  3. `applyAction` is called only inside the session reducer (`useReducer`), never directly from an event handler. React error boundaries do not catch errors thrown in event handlers, so this keeps the top-level error boundary (task 15.1, with Export) able to catch an unexpected throw.
+  4. The Property 2 and Property 11 generators (tasks 7.10 and 7.7) include non-integer samples and the ±4,096 / ±4,097 boundary values. This shows the editor rejects them before the raster code sees them.
+- Rationale: [A note on errors](https://www.typescript-result.dev/a-note-on-errors).
 
 ## Testing Strategy
 

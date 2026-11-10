@@ -213,6 +213,104 @@
         "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
         "timestamp": 1794282080385
       }
+    ],
+    "5.1 Define the zod schemas and document types in `src/domain/schema.ts`": [
+      {
+        "executionId": "b7d30e58-802c-4fe6-ac1a-87da62fceaaa",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794283031571
+      },
+      {
+        "executionId": "b7d30e58-802c-4fe6-ac1a-87da62fceaaa",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794283451084
+      }
+    ],
+    "6.1 Implement `linePixels` and `applyPolyline` in `src/domain/raster.ts`": [
+      {
+        "executionId": "b7d30e58-802c-4fe6-ac1a-87da62fceaaa",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794283032584
+      },
+      {
+        "executionId": "b7d30e58-802c-4fe6-ac1a-87da62fceaaa",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794283452353
+      }
+    ],
+    "5.2 Implement `canonicalize` in `src/domain/canonical.ts`": [
+      {
+        "executionId": "5bb9d3ef-0fcc-42e0-b9c8-40bd8c009b4f",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794297071568
+      },
+      {
+        "executionId": "5bb9d3ef-0fcc-42e0-b9c8-40bd8c009b4f",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794297568120
+      }
+    ],
+    "6.3 Implement `fillRegion` and `src/domain/dither.ts`": [
+      {
+        "executionId": "5bb9d3ef-0fcc-42e0-b9c8-40bd8c009b4f",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794297072258
+      },
+      {
+        "executionId": "5bb9d3ef-0fcc-42e0-b9c8-40bd8c009b4f",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794297568633
+      }
+    ],
+    "10.1 Implement `src/input/pointerMapper.ts`": [
+      {
+        "executionId": "5bb9d3ef-0fcc-42e0-b9c8-40bd8c009b4f",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794297072905
+      },
+      {
+        "executionId": "5bb9d3ef-0fcc-42e0-b9c8-40bd8c009b4f",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794297569284
+      }
+    ],
+    "6. Raster and dither (Owner B)": [
+      {
+        "executionId": "5bb9d3ef-0fcc-42e0-b9c8-40bd8c009b4f",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794297568950
+      }
+    ],
+    "5.3 Implement `validateStack` in `src/domain/schema.ts`": [
+      {
+        "executionId": "0863faa6-d67a-4206-a818-0a081698e181",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794301886266
+      },
+      {
+        "executionId": "0863faa6-d67a-4206-a818-0a081698e181",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794302573196
+      }
+    ],
+    "5.4 Create shared test generators in `tests/properties/arbitraries.ts`": [
+      {
+        "executionId": "472b49d5-166e-4a8d-a513-21cc5362c83e",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794302900556
+      },
+      {
+        "executionId": "472b49d5-166e-4a8d-a513-21cc5362c83e",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794305175343
+      }
+    ],
+    "5. Canonical form and schema validator (Owner B)": [
+      {
+        "executionId": "472b49d5-166e-4a8d-a513-21cc5362c83e",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794305175666
+      }
     ]
   }
 }

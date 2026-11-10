@@ -11,7 +11,7 @@ Local constraints that apply to every task:
 - No Docker on this machine. Backend checks stay "not run" or run on the hosted dev project or in CI.
 - Installed Node 24.19.0 and npm 11.17.0, while the pins are Node 24.22.2 and npm 12.2.2. Record the versions used with every check.
 - Playwright uses the installed Google Chrome (`channel: "chrome"`). WebKit and Firefox are "not run" locally.
-- Create no `.kiro/hooks/` directory.
+- Create no `.kiro/hooks/` before task 9; task 9 adds `core-checks.json` (Req 24).
 - Never put a value from `../.my_env` into any tracked file, document or log.
 - Record every executed check in `docs/decisions.md` as pass, fail or not run with a reason. Never record an unrun check as pass.
 
@@ -126,8 +126,8 @@ Local constraints that apply to every task:
     - Ensure all checks recorded so far are listed with one current result; ask the user if questions arise
     - _Requirements: 2.6_
 
-- [ ] 4. Domain limits and bitmap codec (Owner B)
-  - [ ] 4.1 Implement `src/domain/limits.ts`
+- [x] 4. Domain limits and bitmap codec (Owner B)
+  - [x] 4.1 Implement `src/domain/limits.ts`
     - `LIMITS` constants, `utf8ByteLength` (lone surrogates count 3), `codePointLength`, and the name rule helper (1–64 code points, not whitespace-only)
     - _Requirements: 6.4, 6.7, 12.5_
 
@@ -135,11 +135,11 @@ Local constraints that apply to every task:
     - `tests/unit/limits.test.ts`: ASCII, multi-byte, astral and lone-surrogate byte counts against `Buffer.byteLength`; name rule edges (0, 1, 64, 65 code points, whitespace-only)
     - _Requirements: 6.4, 6.7_
 
-  - [ ] 4.3 Implement the bitmap codec in `src/domain/bitmap.ts`
+  - [x] 4.3 Implement the bitmap codec in `src/domain/bitmap.ts`
     - `createBitmap`, `getPixel`, `setPixel` (copy on write, error on non-integer or out-of-range coordinate or value), table-driven `encodeBitmap` and `decodeBitmap` with the 6,828-character, single `=` and unused-bits checks before allocating output
     - _Requirements: 6.2, 8.1, 8.2, 8.3, 8.5, 8.6, 8.7_
 
-  - [ ] 4.4 Write property test for the bitmap codec oracle
+  - [x] 4.4 Write property test for the bitmap codec oracle
     - **Property 8: The bitmap codec matches an independent pixel array** (blueprint P3)
     - **Validates: Requirements 8.1, 8.2, 8.3, 8.4**
     - File: `tests/properties/raster.property.test.ts`; include coordinates 0, 7, 8, 255 and 159
@@ -265,7 +265,30 @@ Local constraints that apply to every task:
     - _Requirements: 11.5, 11.9_
 
 - [ ] 9. Checkpoint - Domain complete
-  - Run `npm run check:core` (typecheck including the domain import check, unit and property tests). Ensure all tests pass, ask the user if questions arise. Record the result in `docs/decisions.md` and refresh the Resume note.
+  - [ ] 9.1 Run the core checks and record the result
+    - Run `npm run check:core` (typecheck including the domain import check, unit and property tests). Ensure all tests pass, ask the user if questions arise
+    - Record the command, Node/npm/Deno versions, date, result and duration in `docs/decisions.md`
+    - _Requirements: 2.4, 2.6_
+
+  - [ ] 9.2 Add `.kiro/hooks/core-checks.json`
+    - Write the file per the design's Kiro hooks section: `version` "v1", the two hooks "Type safety after source edits" (`PostFileSave`, Windows-safe matcher, `npm run typecheck`) and "Core invariants at turn end" (`Stop`, `npm run check:core`)
+    - First time `npm run typecheck` and `npm run check:core` locally, 3 runs each; every run must exit 0. Record each time and the median in `docs/decisions.md`, then set the timeouts (30 and 60 unless a measured run is longer; if so, narrow the hook or raise the timeout and record why)
+    - Verify the matcher against sample Windows and POSIX paths: matches `src/domain/bitmap.ts`, `src\app\AppShell.tsx`, `supabase/functions/ai/index.ts`, `C:\repo\supabase\functions\ai\index.ts`; does not match `src/styles/app.css`, `src/domain/bitmap.ts.bak`, `tests/unit/limits.test.ts`, `scripts/check-edge.mjs`, `vite.config.ts`
+    - Keep both commands read-only: no source, docs or evidence writes
+    - _Requirements: 2.3, 24.1, 24.2, 24.3, 24.4, 24.5, 24.6, 24.7, 24.8, 24.9_
+
+  - [ ] 9.3 Observe the hooks in the Kiro IDE
+    - This step may need the user to perform the save and the agent turn in the IDE; ask the user to do so, with `NC_Codebase/` open as the workspace folder
+    - Save one `src/domain/*.ts` file and complete one agent turn
+    - Record each observation in `docs/kiro-evidence.md`: date, trigger, command, exit result and duration. Record the Kiro IDE version in `docs/decisions.md`
+    - If a hook did not fire, record "not observed" with the IDE version (never "pass") and ask the user how to proceed
+    - _Requirements: 24.10, 24.11, 24.12, 24.13_
+
+  - [ ] 9.4 Record the checkpoint, commit and push
+    - Add a dated "hooks added" entry to `docs/decisions.md` (the deferral entry stays unchanged) and Verification log rows for 9.1–9.3
+    - Refresh the Resume note at the end of this file
+    - Review `git status`, then stage by path the domain code and tests from tasks 4–8 (`src/domain/`, `tests/`), `.kiro/hooks/core-checks.json`, `docs/decisions.md`, `docs/kiro-evidence.md` and this `tasks.md`; run `npm run check:tracked`; commit and `git push` (no force)
+    - _Requirements: 2.3, 2.4, 2.6, 4.17, 24.8, 24.13_
 
 - [ ] 10. Input state machines (Owner A)
   - [ ] 10.1 Implement `src/input/pointerMapper.ts`
@@ -543,23 +566,27 @@ Local constraints that apply to every task:
     { "id": 17, "tasks": ["7.4", "7.5", "7.6"] },
     { "id": 18, "tasks": ["7.7", "7.8", "7.10", "8.1"] },
     { "id": 19, "tasks": ["7.9", "8.2", "8.3", "11.1"] },
-    { "id": 20, "tasks": ["10.6", "11.2", "11.3", "12.3", "13.1", "17.1", "18.1"] },
-    { "id": 21, "tasks": ["10.7", "13.2", "14.1", "17.2", "17.3", "18.2"] },
-    { "id": 22, "tasks": ["13.3"] },
-    { "id": 23, "tasks": ["13.4"] },
-    { "id": 24, "tasks": ["15.1"] },
-    { "id": 25, "tasks": ["15.2"] },
-    { "id": 26, "tasks": ["17.4"] },
-    { "id": 27, "tasks": ["17.5", "18.3"] },
-    { "id": 28, "tasks": ["18.4", "19.1"] },
-    { "id": 29, "tasks": ["19.2", "19.3", "21.1"] },
-    { "id": 30, "tasks": ["21.2", "21.3", "21.4", "21.5", "21.6", "21.7"] },
-    { "id": 31, "tasks": ["21.8"] },
-    { "id": 32, "tasks": ["22.1"] },
-    { "id": 33, "tasks": ["22.2"] },
-    { "id": 34, "tasks": ["22.3"] },
-    { "id": 35, "tasks": ["23.1"] },
-    { "id": 36, "tasks": ["23.2"] }
+    { "id": 20, "tasks": ["9.1"] },
+    { "id": 21, "tasks": ["9.2"] },
+    { "id": 22, "tasks": ["9.3"] },
+    { "id": 23, "tasks": ["9.4"] },
+    { "id": 24, "tasks": ["10.6", "11.2", "11.3", "12.3", "13.1", "17.1", "18.1"] },
+    { "id": 25, "tasks": ["10.7", "13.2", "14.1", "17.2", "17.3", "18.2"] },
+    { "id": 26, "tasks": ["13.3"] },
+    { "id": 27, "tasks": ["13.4"] },
+    { "id": 28, "tasks": ["15.1"] },
+    { "id": 29, "tasks": ["15.2"] },
+    { "id": 30, "tasks": ["17.4"] },
+    { "id": 31, "tasks": ["17.5", "18.3"] },
+    { "id": 32, "tasks": ["18.4", "19.1"] },
+    { "id": 33, "tasks": ["19.2", "19.3", "21.1"] },
+    { "id": 34, "tasks": ["21.2", "21.3", "21.4", "21.5", "21.6", "21.7"] },
+    { "id": 35, "tasks": ["21.8"] },
+    { "id": 36, "tasks": ["22.1"] },
+    { "id": 37, "tasks": ["22.2"] },
+    { "id": 38, "tasks": ["22.3"] },
+    { "id": 39, "tasks": ["23.1"] },
+    { "id": 40, "tasks": ["23.2"] }
   ]
 }
 ```

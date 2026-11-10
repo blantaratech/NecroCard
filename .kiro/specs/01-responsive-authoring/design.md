@@ -709,13 +709,47 @@ Why the Nebius check has two layers: Supabase secret keys have a published forma
 - `.env.example`: `VITE_SUPABASE_URL=` and `VITE_SUPABASE_PUBLISHABLE_KEY=` only (Req 4.6). `supabase/functions/.env.example`: the six §4.4 names; values left empty except the documented defaults allowed by Req 4.7.
 - `.gitignore`: the fifteen §4.1 entries in blueprint order, then `.my_env` and `/memory/`. `/memory/` is anchored, so `src/memory/notes.md` stays tracked; no entry matches `.kiro` (Req 4.8–4.10).
 - `LICENSE`: standard MIT text with the line `Copyright (c) 2026 Blantara Tech` (Req 4.11).
-- `README.md`: the sections of Req 4.12, including the hosted dev workflow and a "Blocked items" list (Docker-dependent `dev:backend`, pending scripts, hooks).
+- `README.md`: the sections of Req 4.12, including the hosted dev workflow and a "Blocked items" list (Docker-dependent `dev:backend`, pending scripts, and hooks, which are absent from the initial scaffold and added at task 9).
 - `NECROCARD_BLUEPRINT_v2.md` copied to the repository root (§4.1).
 - `.kiro/steering/{product,runtime-safety,release-review,ai-mobile}.md`, `.kiro/agents/{runtime-engineer,runtime-reviewer}.json`, `powers/safe-card-runtime/plugin.json` and `powers/safe-card-runtime/skills/verify-runtime/SKILL.md`: copied from blueprint §3.3, §3.5, §3.7 and §3.8. `product.md` ends with the "Project continuity" block from `NECROCARD_KIRO_MEMORY_GUIDE.md` §2. A unit test extracts each fenced block from the blueprint copy and compares it with the file after LF and trailing-whitespace normalization (Req 4.13–4.15).
 - The `runtime-engineer` agent lists the `@necrocard-dev` MCP tool while `.kiro/settings/mcp.json` is deferred; the agent still works without it, and the gap is noted in `docs/decisions.md`.
-- No `.kiro/hooks/` directory (Req 4.18).
-- `docs/decisions.md`: dated entries for the toolchain mismatch (installed Node 24.19.0 / npm 11.17.0 vs pinned 24.22.2 / 12.2.2), Docker policy and the four Day 1 gate checks with venue and result, deferred hooks and MCP settings, pending scripts, extra paths, the `noReferences` gap (with the two rules from Ports: spec 02 replaces it before the Rule_Interpreter is enabled in Play_Mode, and no deletion path edits the Showcase meantime), the placeholder-interpreter gap, the two-layer Nebius check and whether layer (a) ran, the light-theme success/danger and cursor-ring colours as "contrast checked and approved by the team (user-reported, 2026-11-09)", the Playwright browser choice (chrome channel locally and in CI; WebKit/Firefox "not run" locally), and one entry per executed check (command, Node/npm/Deno versions, date, pass/fail/not run). Re-runs append new entries and never edit old ones (Req 2).
+- No `.kiro/hooks/` directory in the initial scaffold (Req 4.18); `.kiro/hooks/core-checks.json` is added at checkpoint task 9 (Req 24, see Kiro hooks below).
+- `docs/decisions.md`: dated entries for the toolchain mismatch (installed Node 24.19.0 / npm 11.17.0 vs pinned 24.22.2 / 12.2.2), Docker policy and the four Day 1 gate checks with venue and result, hooks deferred during the scaffold (added at task 9 under Req 24, with a later dated "hooks added" entry), deferred MCP settings, pending scripts, extra paths, the `noReferences` gap (with the two rules from Ports: spec 02 replaces it before the Rule_Interpreter is enabled in Play_Mode, and no deletion path edits the Showcase meantime), the placeholder-interpreter gap, the two-layer Nebius check and whether layer (a) ran, the light-theme success/danger and cursor-ring colours as "contrast checked and approved by the team (user-reported, 2026-11-09)", the Playwright browser choice (chrome channel locally and in CI; WebKit/Firefox "not run" locally), and one entry per executed check (command, Node/npm/Deno versions, date, pass/fail/not run). Re-runs append new entries and never edit old ones (Req 2).
 - `docs/kiro-evidence.md`: a table with the header `| date | requirement | Kiro feature | artifact/commit | check/result | consequence |` (Req 4.16).
+
+### Kiro hooks
+
+`.kiro/hooks/core-checks.json` is not part of the initial scaffold (Req 4.18). It is added at checkpoint task 9 by user decision (2026-11-10), in the blueprint §3.4 format, with one change: the matcher accepts both `/` and `\` separators (Req 24.1–24.6).
+
+```json
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Type safety after source edits",
+      "trigger": "PostFileSave",
+      "matcher": "(^|[\\\\/])(src|supabase[\\\\/]functions)[\\\\/].*\\.(ts|tsx)$",
+      "action": { "type": "command", "command": "npm run typecheck" },
+      "timeout": 30,
+      "enabled": true
+    },
+    {
+      "name": "Core invariants at turn end",
+      "trigger": "Stop",
+      "action": { "type": "command", "command": "npm run check:core" },
+      "timeout": 60,
+      "enabled": true
+    }
+  ]
+}
+```
+
+- **Matcher.** After JSON decoding the regular expression is `(^|[\\/])(src|supabase[\\/]functions)[\\/].*\.(ts|tsx)$`. `[\\/]` accepts either separator, and `(^|[\\/])` anchors `src` and `supabase` to a whole directory segment in relative and absolute paths. It matches `src/domain/bitmap.ts`, `src\app\AppShell.tsx` and `C:\repo\supabase\functions\ai\index.ts`, and does not match `src/styles/app.css`, `src/domain/bitmap.ts.bak`, `tests/unit/limits.test.ts` or `vite.config.ts` (Req 24.4, 24.5). The blueprint matcher `(src|supabase/functions)/.*\.(ts|tsx)$` misses backslash paths, which the blueprint asks to normalize for Windows.
+- **Read-only.** `npm run typecheck` runs `tsc --noEmit` and the two check scripts, and `npm run check:core` adds `vitest run`; none writes to source, tests, `docs/` or any tracked file (Req 24.7). A hook that edited a file would fire `PostFileSave` again and could loop, and a hook that appended evidence would make every agent turn change `docs/`. Results are recorded by the task that runs the check, never by the hook.
+- **Why task 9.** Before task 9 there are no test files, so `vitest run` exits non-zero and the `Stop` hook would fail on every turn. The repository sits in a OneDrive-synced folder, which slows `tsc` and Vitest file access, so the run times must be measured on this machine before the timeouts are trusted. By task 9 the domain code and its tests exist and `npm run check:core` is expected to exit 0.
+- **Timeout rule.** Before enabling, run `npm run typecheck` and `npm run check:core` 3 times each on the current tree, record each time and the median in `docs/decisions.md`, and require exit 0 on every run (Req 24.8). If any run is longer than the timeout (30 s and 60 s), either narrow the hook (for example a `PostFileSave` command limited to the domain project) or raise the timeout to at least the longest measured run, and record the change and reason (Req 24.9).
+- **Observation.** Kiro reads `.kiro/hooks/` from the opened workspace folder and runs commands at its root, so the IDE must have `NC_Codebase/` open as the workspace for `npm run …` to find `package.json`. One save of a `src/domain/*.ts` file and one completed agent turn are observed in the installed IDE; each result (date, trigger, command, exit status, duration) goes into `docs/kiro-evidence.md`, and the IDE version into `docs/decisions.md`. A hook that does not fire is recorded as "not observed" with the IDE version, never as "pass" (Req 24.10–24.13).
+- **CI remains the gate.** The hooks give fast local feedback only and do not replace protected-branch CI (blueprint §3.4). The complete checks run in GitHub Actions, and a hook result is never recorded as a CI result in `docs/decisions.md`.
 
 ## Docker-free Backend Path
 
@@ -972,7 +1006,7 @@ Example and edge tests for what properties do not cover:
 - Keyboard state machine examples: initial cursor (128, 80), Space with Dither_Fill emits `fill` (Req 23.4, 23.12).
 - Token contrast: a WCAG relative-luminance function checks the listed token pairs in both themes, including light `--success: #1E6B32` and `--danger: #B3123A`, and the `#C2185B` cursor ring against paper and ink (Req 17.11, 23.1). The team has already approved these colours (user-reported, 2026-11-09); this test is regression evidence that later token edits keep the approved contrast.
 - Breakpoint constants match `app.css` media queries.
-- Scaffold checks: `package.json` pins, engines and scripts (Req 1.1–1.3, 1.5, 1.7, 1.8); lockfile versions (Req 1.4); `tsconfig.app.json` options (Req 3.1); `.env.example` files (Req 4.6, 4.7); `.gitignore` entries and `git check-ignore --no-index` results (Req 4.8–4.10); LICENSE text (Req 4.11); steering, agent and power files equal the normalized blueprint blocks (Req 4.13–4.15); evidence table header (Req 4.16); no `.kiro/hooks/` (Req 4.18).
+- Scaffold checks: `package.json` pins, engines and scripts (Req 1.1–1.3, 1.5, 1.7, 1.8); lockfile versions (Req 1.4); `tsconfig.app.json` options (Req 3.1); `.env.example` files (Req 4.6, 4.7); `.gitignore` entries and `git check-ignore --no-index` results (Req 4.8–4.10); LICENSE text (Req 4.11); steering, agent and power files equal the normalized blueprint blocks (Req 4.13–4.15); evidence table header (Req 4.16); once `.kiro/hooks/core-checks.json` exists (task 9), its shape: `version` "v1", exactly the two named hooks with their triggers, commands, integer timeouts and `enabled`, and the matcher accepting and rejecting the sample Windows and POSIX paths of Req 24.4 and 24.5 (Req 24.1–24.6).
 - Script behaviour: `check-domain-imports` on fixture sources (Req 3.3), the Deno version parser (Req 3.7), `check-edge` with zero entry points and with a fixture entry containing a type error (Req 3.5, 3.6), `check-bundle-secrets` exit codes on missing, empty and seeded temporary directories (Req 3.10).
 
 ### Browser tests (`tests/e2e/`, Playwright)

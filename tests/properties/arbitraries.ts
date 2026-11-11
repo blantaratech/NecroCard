@@ -463,9 +463,6 @@ const FIELD_KEYS = ["id", "name", "kind", "x", "y", "width", "height", "text"] a
 const GEOMETRY_KEYS = ["x", "y", "width", "height"] as const;
 const FORBIDDEN_KEYS = ["__proto__", "constructor", "prototype"] as const;
 const SESSION_KEYS = ["theme", "zoom", "selection", "history", "playState", "cursor"] as const;
-/** Keys whose schema type is a literal (see the `missing-property` fault). */
-const ROOT_LITERAL_KEYS: ReadonlySet<unknown> = new Set(["format", "schemaVersion"]);
-const CARD_LITERAL_KEYS: ReadonlySet<unknown> = new Set(["width", "height"]);
 
 /** Namespace of the IDs the fault injector adds. */
 const FAULT_NAMESPACE = 0xfa01_7000;
@@ -763,19 +760,13 @@ const FAULT_BUILDERS: Readonly<Record<FaultKind, FaultBuilder>> = {
         return { kind: "unknown-property", candidate: c, path, expectedCode: "unknown-property" };
       }),
 
-  // Req 6.5: a required key removed from the root, a Card or a Widget.
-  // `validateStack` (task 5.3) reports a missing literal-typed key (`format`, `schemaVersion`,
-  // Card `width` and `height`) as `invalid-value` at the correct path, because zod reports
-  // `invalid_value` for an absent literal and `mapZodIssue` does not check for a missing key
-  // there. Observed 2026-11-10; change `LITERAL_KEYS` handling here if the validator changes.
+  // Req 6.5: a required key removed from the root, a Card or a Widget, literal-typed keys
+  // (`format`, `schemaVersion`, Card `width` and `height`) included.
   "missing-property": (doc) =>
     pick(schemaObjects(doc).flatMap((t) => t.keys.map((k): Path => [...t.path, k]))).map((path) => {
       const c = clone(doc);
       deleteAt(c, path);
-      const last = path[path.length - 1];
-      const literal = path.length <= 1 ? ROOT_LITERAL_KEYS.has(last) : path.length === 3 && CARD_LITERAL_KEYS.has(last);
-      const expectedCode: DiagnosticCode = literal ? "invalid-value" : "missing-property";
-      return { kind: "missing-property", candidate: c, path, expectedCode };
+      return { kind: "missing-property", candidate: c, path, expectedCode: "missing-property" };
     }),
 
   // Req 6.5: a value of another JSON type in place of a string, integer, array or object.

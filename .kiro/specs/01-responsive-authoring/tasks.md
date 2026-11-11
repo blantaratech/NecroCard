@@ -199,19 +199,19 @@ Local constraints that apply to every task:
     - Iterative 4-connected fill with `visited` marked at push time (stack bounded at 40,960); `BAYER4`, `DITHER_LEVEL = 6`, `ditherPattern(x, y)`
     - _Requirements: 10.1, 10.4_
 
-- [ ] 7. Editor reducer (Owner B)
-  - [ ] 7.1 Implement the editor core and card actions in `src/domain/editor.ts`
+- [x] 7. Editor reducer (Owner B)
+  - [x] 7.1 Implement the editor core and card actions in `src/domain/editor.ts`
     - `EditAction` union, `EditorContext`, `EditResult`, `applyAction` contract (candidate, noop check, `validateStack`, applied or rejected), `createBlankStack`, `forkStack`
     - Card actions `card/add`, `card/rename`, `card/move`, `card/delete` with "Card N" defaults, `last-card`, `referenced` (listing every referencing `{cardId, widgetId}`), `card-limit` and name diagnostics; move at the ends is a noop
     - Pure helper for the current card after delete (follower, else predecessor)
     - _Requirements: 5.5, 5.6, 6.8, 6.9, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.10, 7.11, 7.12_
 
-  - [ ] 7.2 Write property test for card authoring invariants
+  - [x] 7.2 Write property test for card authoring invariants
     - **Property 1: Card authoring invariants** (blueprint P1)
     - **Validates: Requirements 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.10, 7.11, 7.12**
     - File: `tests/properties/cards.property.test.ts`; generate a Reference_Index that reports random references
 
-  - [ ] 7.3 Implement widget actions in `src/domain/editor.ts`
+  - [x] 7.3 Implement widget actions in `src/domain/editor.ts`
     - `widget/add` (defaults from the design table, smallest free "Button N"/"Field N", `widget-limit`), `widget/update` (verbatim text, `source-too-large` with measured bytes, name rules, `document-too-large`), `widget/move` and `widget/resize` (clamped, zero change is noop), `widget/setGeometry` (`geometry-range` with field and range), `widget/delete` (reference-guarded)
     - _Requirements: 6.8, 12.1, 12.2, 12.3, 12.4, 12.5, 12.6, 12.7, 12.8, 12.9, 13.1, 13.2, 13.3, 13.4, 13.5, 13.8, 13.9_
 
@@ -225,7 +225,7 @@ Local constraints that apply to every task:
     - **Validates: Requirements 13.1, 13.2, 13.3, 13.4, 13.5, 13.8, 13.9**
     - File: `tests/properties/geometry.property.test.ts`
 
-  - [ ] 7.6 Implement `stroke/commit` and `fill/apply` in `src/domain/editor.ts`
+  - [x] 7.6 Implement `stroke/commit` and `fill/apply` in `src/domain/editor.ts`
     - Stroke: reject non-integer samples or |v| > 4,096; decode the card bitmap, `applyPolyline` with 1 (Pencil) or 0 (Eraser), noop if no pixel changed
     - Fill: noop if the tap is outside 0–255 × 0–159 or no region pixel would change; otherwise set region pixels to `ditherPattern`
     - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 9.8, 9.10, 10.1, 10.2, 10.3, 10.5, 10.7_

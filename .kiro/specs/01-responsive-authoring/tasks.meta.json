@@ -3,6 +3,10 @@
     "4.4 Write property test for the bitmap codec oracle": {
       "status": "passed",
       "lastRunTimestamp": 1794281776495
+    },
+    "7.2 Write property test for card authoring invariants": {
+      "status": "passed",
+      "lastRunTimestamp": 1794343772793
     }
   },
   "executionHistory": {
@@ -310,6 +314,61 @@
         "executionId": "472b49d5-166e-4a8d-a513-21cc5362c83e",
         "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
         "timestamp": 1794305175666
+      }
+    ],
+    "7.1 Implement the editor core and card actions in `src/domain/editor.ts`": [
+      {
+        "executionId": "7573fa95-8c66-42ca-aa7b-ba3740af73b3",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794337248507
+      },
+      {
+        "executionId": "7573fa95-8c66-42ca-aa7b-ba3740af73b3",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794338430710
+      }
+    ],
+    "7.2 Write property test for card authoring invariants": [
+      {
+        "executionId": "d8b37eef-3b71-4481-8d48-0cac27d1e399",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794339761544
+      },
+      {
+        "executionId": "d8b37eef-3b71-4481-8d48-0cac27d1e399",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794343840390
+      }
+    ],
+    "7.3 Implement widget actions in `src/domain/editor.ts`": [
+      {
+        "executionId": "d8b37eef-3b71-4481-8d48-0cac27d1e399",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794339762624
+      },
+      {
+        "executionId": "d8b37eef-3b71-4481-8d48-0cac27d1e399",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794343841682
+      }
+    ],
+    "7.6 Implement `stroke/commit` and `fill/apply` in `src/domain/editor.ts`": [
+      {
+        "executionId": "19862569-ec74-40da-b003-ecdf5586fec3",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794434441204
+      },
+      {
+        "executionId": "19862569-ec74-40da-b003-ecdf5586fec3",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794435740094
+      }
+    ],
+    "7. Editor reducer (Owner B)": [
+      {
+        "executionId": "19862569-ec74-40da-b003-ecdf5586fec3",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794435740635
       }
     ]
   }

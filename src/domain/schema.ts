@@ -127,7 +127,7 @@ export type DiagnosticCode =
   | "unknown-property"
   | "missing-property"
   | "wrong-type"
-  | "invalid-value" // literal or discriminator mismatch, e.g. `schemaVersion` 2 or `kind` "image"
+  | "invalid-value" // literal or discriminator mismatch, e.g. `schemaVersion` 2 or `kind` "image"; also editor input: a non-integer widget move/resize delta (task 7.3), a bad Stroke sample or fill point, an unknown action type (task 7.6)
   | "invalid-id" // a Stable_ID or `cards` key that is not 8-4-4-4-12 hexadecimal text
   // Semantic pass (Req 6.1–6.4, 6.6, 6.7)
   | "card-order" // `cardOrder` is not a permutation of the keys of `cards`
@@ -146,7 +146,9 @@ export type DiagnosticCode =
   | "document-too-large"
   // Editor rejections (Req 7.5, 7.6)
   | "last-card"
-  | "referenced";
+  | "referenced"
+  | "card-not-found" // an action names a Card ID that is not in the document (task 7.1)
+  | "widget-not-found"; // an action names a Widget ID that is not on the named Card (task 7.3)
 
 /** Maps a `checkName` failure to its diagnostic code (title, Card name and Widget name alike). */
 export const NAME_RULE_CODE: Readonly<Record<NameRuleFailure, DiagnosticCode>> = {
@@ -359,6 +361,9 @@ function mapZodIssue(issue: z.core.$ZodIssue, candidate: unknown): Diagnostic[] 
         },
       ];
     case "invalid_value":
+      // zod 4 reports an absent literal-typed key (`format`, `schemaVersion`, Card `width`
+      // and `height`) as `invalid_value`, not `invalid_type`.
+      if (isMissingProperty(candidate, issue.path)) return [missing()];
       return [{ code: "invalid-value", path, message: `Expected ${describeValues(issue.values)}.` }];
     case "invalid_format":
       // The only string format in the schema is the Stable_ID pattern.
@@ -386,7 +391,8 @@ function mapZodIssue(issue: z.core.$ZodIssue, candidate: unknown): Diagnostic[] 
 // Pass 3: semantic checks
 // ---------------------------------------------------------------------------------------
 
-const NAME_RULE_MESSAGE: Readonly<Record<NameRuleFailure, string>> = {
+/** Message tail per name rule; the subject ("A card name", ...) is prefixed by the caller. */
+export const NAME_RULE_MESSAGE: Readonly<Record<NameRuleFailure, string>> = {
   empty: "must not be empty.",
   "too-long": `must have at most ${LIMITS.nameCodePointsMax} characters.`,
   "whitespace-only": "must not be only spaces.",

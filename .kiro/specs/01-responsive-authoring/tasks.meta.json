@@ -370,6 +370,25 @@
         "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
         "timestamp": 1794435740635
       }
+    ],
+    "8.1 Implement `src/domain/history.ts`": [
+      {
+        "executionId": "8aa69b19-d2b7-4124-90e5-c15e7a7ed304",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794452606216
+      },
+      {
+        "executionId": "8aa69b19-d2b7-4124-90e5-c15e7a7ed304",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794455100773
+      }
+    ],
+    "8. Edit history (Owner B)": [
+      {
+        "executionId": "8aa69b19-d2b7-4124-90e5-c15e7a7ed304",
+        "chatSessionId": "sess_bfd25289-fe66-4a33-89de-617398c64cf1",
+        "timestamp": 1794455101059
+      }
     ]
   }
 }

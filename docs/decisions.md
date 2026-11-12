@@ -254,6 +254,14 @@ Blueprint §4.2 scripts omitted from `package.json` (Req 1.7, 1.8):
 - Removed `DiagnosticCode` `action-unsupported` (temporary since task 7.1). The `never` exhaustiveness guard stays; at run time its `default` branch now rejects an unknown action `type` as `invalid-value` at `["type"]` ("Unknown edit action …") instead of throwing, per D-B. No new `DiagnosticCode`.
 - Card and widget action code is unchanged.
 
+## 2026-11-12: Edit_History in `src/domain/history.ts` (task 8.1)
+
+- Types and functions as in design.md: `HistoryEntry { before, after, label }`, `EditHistory { undo, redo }` (readonly arrays), `emptyHistory`, `commit`, `undo`, `redo`. Entries hold document references; nothing is copied.
+- The top of each stack is its last element. `undo` takes the last Undo entry, appends it to `redo` and returns `before`; `redo` takes the last Redo entry, appends it to `undo` and returns `after`. Both return `null` on an empty stack, so the caller keeps its document and history (Req 11.9).
+- `commit` appends, keeps the newest `LIMITS.historyDepth` (50) entries and sets `redo` to `[]`. `redo` needs no cap: Undo plus Redo entries never exceed 50, because only `commit` adds entries and it empties `redo`.
+- Addition: the return type `{ history, doc } | null` of `undo`/`redo` is exported as the named interface `HistoryStep`; it is structurally the same as the design's inline type.
+- Every function returns new arrays and never writes to the input history; checked on a frozen history (Verification log).
+
 ## Verification log
 
 Rows are appended and never edited. The latest row for a check is its current result. Results are "pass", "fail" or "not run" with a reason.
@@ -345,3 +353,9 @@ Rows are appended and never edited. The latest row for a check is its current re
 | 2026-11-12 | Type-check, before the tasks 7.1–7.3, 7.6 commit | `npm run typecheck` | 24.19.0 / 11.17.0 (Deno 2.9.6) | pass | Exit 0; app, domain and node projects; `check-domain-imports: 8 file(s), 0 finding(s)`; `check-edge: Deno 2.9.6`, `Checked 0 entry point(s)` |
 | 2026-11-12 | Property tests, before the tasks 7.1–7.3, 7.6 commit | `npm run test:pbt` | 24.19.0 / 11.17.0 | pass | Exit 0; vitest 5.1.0; 2 files, 2 tests passed: Property 8 (1,518 ms), Property 1 in `cards.property.test.ts` (11,958 ms; file 11,964 ms); total 12.97 s. Property 1 again near the 11.8 s of the previous run, against 3.3 s on 2026-11-11; not investigated. No temporary file under `tests/` |
 | 2026-11-12 | Tracked-file secret check (Req 4.17), before the tasks 7.1–7.3, 7.6 commit | `npm run check:tracked` | 24.19.0 / 11.17.0 (git 2.55.0.windows.3) | pass | Exit 0; `Exempted 1 public default value(s) from supabase/functions/.env.example`; `Scanned 60 tracked file(s); 0 finding(s)` (7 paths staged). `git ls-files .my_env` printed nothing |
+| 2026-11-12 | Type-check (task 8.1, `src/domain/history.ts`) | `npm run typecheck` | 24.19.0 / 11.17.0 (Deno 2.9.6) | pass | Exit 0; app, domain and node projects; `check-domain-imports: 9 file(s), 0 finding(s)`; `check-edge: Deno 2.9.6`, `Checked 0 entry point(s)` |
+| 2026-11-12 | Ad hoc history sanity check (task 8.1) | `npx vitest run tests/unit/tmp-history-sanity.test.ts` (temporary file, deleted after the run) | 24.19.0 / 11.17.0 | pass | Exit 0; vitest 5.1.0; 1 file, 5 tests passed: 51 commits leave 50 entries with the oldest dropped; undo then redo return the same document references (`toBe`); a commit after an undo empties `redo`; `undo`/`redo` on empty stacks return `null`; `commit`, `undo` and `redo` on a frozen history (entries and arrays frozen) do not throw and leave it unchanged. Not a test file; tasks 8.2 and 8.3 not written |
+| 2026-11-12 | Property tests (task 8.1) | `npm run test:pbt` | 24.19.0 / 11.17.0 | pass | Exit 0; vitest 5.1.0; 2 files, 2 tests passed (Property 1 in `cards.property.test.ts`, Property 8 in `raster.property.test.ts`); total 4.81 s; `FC_RUNS`, `FC_SEED`, `FC_PATH` unset |
+| 2026-11-12 | Type-check, before the task 8.1 commit | `npm run typecheck` | 24.19.0 / 11.17.0 (Deno 2.9.6) | pass | Exit 0; app, domain and node projects; `check-domain-imports: 9 file(s), 0 finding(s)`; `check-edge: Deno 2.9.6`, `Checked 0 entry point(s)` |
+| 2026-11-12 | Property tests, before the task 8.1 commit | `npm run test:pbt` | 24.19.0 / 11.17.0 | pass | Exit 0; vitest 5.1.0; 2 files, 2 tests passed: Property 8 (1,034 ms), Property 1 in `cards.property.test.ts` (4,728 ms; file 4,731 ms); total 5.27 s. `FC_RUNS`, `FC_SEED`, `FC_PATH` unset. No temporary file under `tests/` |
+| 2026-11-12 | Tracked-file secret check (Req 4.17), before the task 8.1 commit | `npm run check:tracked` | 24.19.0 / 11.17.0 (git 2.55.0.windows.3) | pass | Exit 0; `Exempted 1 public default value(s) from supabase/functions/.env.example`; `Scanned 61 tracked file(s); 0 finding(s)` (4 paths staged). `git ls-files .my_env` printed nothing |

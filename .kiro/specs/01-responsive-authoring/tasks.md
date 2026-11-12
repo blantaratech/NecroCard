@@ -250,8 +250,8 @@ Local constraints that apply to every task:
     - **Validates: Requirements 6.8, 6.9, 12.1, 12.7, 12.8, 13.5**
     - File: `tests/properties/editor-validity.property.test.ts`
 
-- [ ] 8. Edit history (Owner B)
-  - [ ] 8.1 Implement `src/domain/history.ts`
+- [x] 8. Edit history (Owner B)
+  - [x] 8.1 Implement `src/domain/history.ts`
     - `emptyHistory`, `commit` (cap 50, clears redo), `undo`, `redo` returning `null` on empty stacks
     - _Requirements: 10.5, 10.6, 11.1, 11.2, 11.3, 11.4, 11.5, 11.9, 11.10_
 
